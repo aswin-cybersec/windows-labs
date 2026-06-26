@@ -1,58 +1,35 @@
-# Windows Troubleshooting Lab
+## Lab 2 - Windows System Diagnostics
 
-## Objective
-Perform end-to-end network connectivity verification between 
-Windows 10 and Kali Linux VMs using ICMP ping across a 
-VirtualBox NAT Network.
+### Objective
+Perform Windows system diagnostics using built-in 
+tools to simulate real IT Support troubleshooting tasks.
 
-## Environment
-- Host OS: Windows 11
-- VM 1: Windows 10 (VirtualBox)
-- VM 2: Kali Linux (VirtualBox)
-- Network: VirtualBox NAT Network (10.0.2.0/24)
+### Tools Used
+- Command Prompt (Admin)
+- Event Viewer
+- Services.msc
+- Task Manager
+- System File Checker (SFC)
 
-## Tools Used
-- VirtualBox
-- Windows Command Prompt
-- Kali Linux Terminal
-- ICMP Ping
+### Steps Performed
 
-## Network Configuration
-| Machine    | IP Address  | Gateway   |
-|------------|-------------|-----------|
-| Windows 10 | 10.0.2.3    | 10.0.2.1  |
-| Kali Linux | 10.0.2.15   | 10.0.2.1  |
+| Step | Command/Tool | Finding |
+|------|-------------|---------|
+| 1 | ipconfig /all | DHCP enabled, DNS: ISP servers |
+| 2 | systeminfo | Windows 10 Home, 2GB RAM, 5 hotfixes |
+| 3 | Event Viewer | Event ID 7000 - WdiServiceHost failed to start |
+| 4 | Services.msc | Restarted Windows Update service successfully |
+| 5 | Task Manager | High CPU - Windows Update running in background |
+| 6 | sfc /scannow | Found and repaired corrupt system files |
 
-## Troubleshooting Methodology
-1. Loopback test - 127.0.0.1
-2. LAN connectivity - ping between VMs
-3. Gateway test - ping 10.0.2.1
-4. Internet connectivity - ping 8.8.8.8
+### Key Findings
+- Event ID 7000 = Service failed to start (permissions issue)
+- High CPU at idle caused by Windows Update background activity
+- sfc /scannow found and repaired corrupt files on fresh install
+- Normal behavior on new VM — not a critical issue
 
-## Results
-| Test | From | Target | Result |
-|------|------|--------|--------|
-| Loopback | Windows 10 | 127.0.0.1 | ✅ Pass |
-| Loopback | Kali Linux | 127.0.0.1 | ✅ Pass |
-| LAN | Windows 10 | 10.0.2.15 | ✅ Pass |
-| LAN | Kali Linux | 10.0.2.3 | ✅ Pass |
-| Gateway | Windows 10 | 10.0.2.1 | ✅ Pass |
-| Gateway | Kali Linux | 10.0.2.1 | ✅ Pass |
-| Internet | Windows 10 | 8.8.8.8 | ✅ Pass |
-| Internet | Kali Linux | 8.8.8.8 | ✅ Pass |
-
-## Key Findings
-- Windows Firewall blocks ICMP by default. 
-  Added inbound rule to allow ICMPv4.
-- TTL values identify device type:
-  64 = Linux, 128 = Windows, 255 = Network device
-- Both VMs confirmed full connectivity: 
-  loopback → LAN → gateway → internet
-
-## Lessons Learned
-- Ping failure does not always mean the device is offline.
-  Firewall rules can silently drop ICMP packets.
-- NAT mode isolates VMs. NAT Network mode allows 
-  inter-VM communication.
-- The 4-step ping sequence is the standard first response 
-  to any connectivity complaint in IT Support.
+### Lessons Learned
+- Always check Task Manager before assuming hardware failure
+- sfc /scannow is first response to system instability complaints
+- High CPU does not always mean malware — check Windows Update first
+- Event Viewer is the primary log source for Windows diagnostics
